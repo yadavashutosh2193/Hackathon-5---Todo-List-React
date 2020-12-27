@@ -8,12 +8,18 @@ function ListItem(props){
         setEdit(false);
     }
     return (<>
-    {!Edit ? <><p className = "list">{props.Item}</p>
+    {!Edit ? <>
+    <div className = "ListItemDiv">
+        <p className = "list">{props.Item}</p>
         <button className = "edit" onClick = {()=> setEdit(true)}>Edit</button>
-        <button className = "delete" onClick = {()=>props.DeleteItem(props.idx)}>Delete</button></> : 
+        <button className = "delete" onClick = {()=>props.DeleteItem(props.idx)}>Delete</button>
+        </div>
+        </> : 
         <>
+        <div className = "ListItemDiv">
         <input type = "text" value = {editedItem} placeholder = "Edit Text" className = "editTask" onChange = {(e)=>setEditedItem(e.target.value)}/>
         <button className = "saveTask" disabled = {editedItem.length === 0} onClick = {SaveTask}>Save</button>
+        </div>
         </>}
         
         

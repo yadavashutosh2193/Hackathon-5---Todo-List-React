@@ -1,34 +1,86 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./../styles/App.css";
-import ListItem from '../ListItem';
+import LoginForm from "./LoginForm";
+// import ListItem from '../ListItem';
+import TodoList from "./TodoList";
+
+//serverpath = D:\my view\Ashutosh yadav\Newton School\ReactProjects\todo_app
 function App() 
 {
-	const [item, setItem] = useState("");
-	const [items, setItems] = useState([]);
+	const [loggedin, setLoggedin] = useState(false);
+	const [error, setError] = useState();
+	const [userName, setUserName]= useState(undefined);
+  
+ const getUserName = ()=>{
+	return fetch('http://localhost:9999/userinfo', {
+		 credentials: "include",
+	 }).then(res =>{
+		 if(res.ok){
+			 return res.json();
+		 }else{
+			 setLoggedin(false);
+			 setUserName(undefined);
+			 return {success: false}
+		 }
+	 }).then(r=>{
+		 if(r.success !== false);
+		 setLoggedin(true);
+		 setUserName(r.userName);
+	 });
+ }
+ useEffect(()=>{
+	 getUserName();
+ }, []);
 
-const AddItemToList = () => {
-    setItems((oldItem) => {
-		return [...oldItem, item];
-	})
-	setItem("");
-};	
-const Delete = (index)=>{
-	 items.splice(index, 1);
-	 setItems([...items]);
-}
-const SaveNewItem = ( EditedItem, index) =>{
-	items[index] = EditedItem;
-	setItems([...items]);
-}
+	const signupHandler = (username, password) => {
+		loginOrSignup('http://localhost:9999/signup', username, password);
+	  };
+	  const loginHandler = (username, password) => {
+		loginOrSignup('http://localhost:9999/login', username, password);
+	  };
+	
+	  const logoutHandler = () => {
+		return fetch('http://localhost:9999/logout', { credentials: 'include'})
+		.then(r => {
+		  if(r.ok) {
+			setLoggedin(false);
+			setUserName(undefined);
+		  }
+		});
+	  };
+	
+	
+	  const loginOrSignup = (url, username, password) => {
+		fetch(url, {
+		  method: "POST",
+		  body: JSON.stringify({ userName: username, password }),
+		  headers: {
+			"Content-Type": "application/json",
+		  },
+		  credentials:"include"
+		})
+		  .then((r) => {
+			if(r.ok) {
+			  return { success: true };
+			} else {
+			  return r.json()
+			}
+		  })
+		  .then((r) => {
+			if(r.success === true) {
+			 return getUserName();
+			} else {
+			  setError(r.err);
+			}
+		  });
+	  }
+
 	return (
 	<div id="main">
-	   <textarea id = "task" value = {item} placeholder= "Enter Item name" onChange = {(e)=>setItem(e.target.value)}></textarea>
-	   <button id = "btn" onClick = {AddItemToList} disabled = {item.trim().length === 0}>Add</button>
-	   {items.map((newItem, Idx)=>{
-		   return <ListItem key = {`${newItem}_${Idx}`} idx = {Idx} 
-		   Item = {newItem} DeleteItem = {Delete} EditHandler = {SaveNewItem}/>
-	   })}
-	   
+	 {loggedin ? <TodoList user = {userName} logOut = {logoutHandler}/> : 
+	 <LoginForm logInHandler = {loginHandler} 
+	 signupHandler = {signupHandler} error = {error}/>
+	 }
 	</div>
 	);
 }
