@@ -23,9 +23,10 @@ function App()
 			 return {success: false}
 		 }
 	 }).then(r=>{
-		 if(r.success !== false);
+		 if(r.success !== false){
 		 setLoggedin(true);
 		 setUserName(r.userName);
+		}
 	 });
  }
  useEffect(()=>{

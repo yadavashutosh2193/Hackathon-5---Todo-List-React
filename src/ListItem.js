@@ -10,6 +10,7 @@ function ListItem(props){
     return (<>
     {!Edit ? <>
     <div className = "ListItemDiv">
+        <input type = "checkbox"/>
         <p className = "list">{props.Item}</p>
         <button className = "edit" onClick = {()=> setEdit(true)}>Edit</button>
         <button className = "delete" onClick = {()=>props.DeleteItem(props.idx)}>Delete</button>
